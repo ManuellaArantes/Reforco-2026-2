@@ -20,12 +20,13 @@
         href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet">
 
-    <!-- scripts do Chart.js - 2022-1 -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!--FONT AWESOME-->
     <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
 </head>
+
 
 
 <body>
@@ -84,11 +85,46 @@
                     <h1>Painel</h1>
                     <div class="div-results">
 
+
+                        <div>
+                            <canvas id="myChart"></canvas>
+                        </div>
+
+
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
+
+
+
+
+
+
+    <script>
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Votes',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 
 
 </body>
@@ -96,7 +132,7 @@
 </html>
 
 <script>
-    
+
 
     let proximaAtualizacao;
 
@@ -180,6 +216,7 @@
 
     //     Se quiser alterar a busca, ajuste as regras de negócio em src/controllers
     //     Para ajustar o "select", ajuste o comando sql em src/models
+    
     function obterDadosGrafico(idAquario) {
 
         alterarTitulo(idAquario)

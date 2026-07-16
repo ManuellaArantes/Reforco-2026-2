@@ -1,0 +1,1 @@
+var painelModel = require("../models/painelModel");

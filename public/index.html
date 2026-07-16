@@ -21,7 +21,7 @@
   <!-- scripts do Chart.js - 2022-1 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!--FONT AWESOME-->
+  
   <script src="https://kit.fontawesome.com/9f7414eb10.js" crossorigin="anonymous"></script>
 </head>
 
@@ -102,81 +102,126 @@
         if (resposta.status == 204) {
           var feed = document.getElementById("feed_container");
           var mensagem = document.createElement("span");
-          mensagem.innerHTML = "Nenhum resultado encontrado."
+          mensagem.innerHTML = "Nenhum resultado encontrado.";
           feed.appendChild(mensagem);
-          throw "Nenhum resultado encontrado!!";
+          throw "Nenhum resultado encontrado!";
         }
 
         resposta.json().then(function (resposta) {
-          console.log("Dados recebidos: ", JSON.stringify(resposta));
-
           var feed = document.getElementById("feed_container");
           feed.innerHTML = "";
+
           for (let i = 0; i < resposta.length; i++) {
             var item = resposta[i];
 
-            var divitem = document.createElement("div");
-            var spanID = document.createElement("span");
-            var spanTitulo = document.createElement("span");
+            var divItem         = document.createElement("div");
+            var spanID          = document.createElement("span");
+            var spanTitulo      = document.createElement("span");
+            var spanAutor       = document.createElement("span");
+            var spanGenero      = document.createElement("span");
             var spanPrecoCompra = document.createElement("span");
-            var spanPrecoVenda = document.createElement("span");
-            var spanAutor = document.createElement("span");
-            var spanGenero = document.createElement("span");
-            
-            var divButtons = document.createElement("div");
-            var btnEditar = document.createElement("button");
-            var btnDeletar = document.createElement("button");
+            var spanPrecoVenda  = document.createElement("span");
+            var spanEstoque     = document.createElement("span");
+            var divBotoes       = document.createElement("div");
+            var btnEditar       = document.createElement("button");
+            var btnDeletar      = document.createElement("button");
 
-            spanID.innerHTML = "ID: <b>" + item.id + "</b>";
-            spanTitulo.innerHTML = "Título: <b>" + item.titulo + "</b>";
-            spanPrecoCompra.innerHTML = "Preço de Compra (R$): <b>" + item.precoCompra + "<b>";
-            spanPrecoVenda.innerHTML = "Preço de Venda (R$): <b>" + item.precoVenda + "<b>";
-            spanAutor.innerHTML = "Autor do Livro: <b>" + item.nomeAutor + "<b>";
-            spanGenero.innerHTML = "Gênero: <b>" + item.nomeGenero + "<b>";
+            spanID.innerHTML          = "ID: <b>" + item.id + "</b>";
+            spanTitulo.innerHTML      = "Título: <b>" + item.titulo + "</b>";
+            spanAutor.innerHTML       = "Autor: <b>" + item.nomeAutor + "</b>";
+            spanGenero.innerHTML      = "Gênero: <b>" + item.nomeGenero + "</b>";
+            spanPrecoCompra.innerHTML = "Preço de Compra: <b>R$ " + item.precoCompra + "</b>";
+            spanPrecoVenda.innerHTML  = "Preço de Venda: <b>R$ " + item.precoVenda + "</b>";
+            spanEstoque.innerHTML     = "Estoque: <b>" + item.quantidadeEstoque + "</b>";
 
-            btnEditar.innerHTML = "Editar";
+            btnEditar.innerHTML  = "Editar";
             btnDeletar.innerHTML = "Deletar";
 
-            divitem.className = "publicacao";
-            spanTitulo.id = "inputNumero" + item.idLivro;
-            spanTitulo.className = "publicacao-titulo";
-            spanAutor.className = "publicacao-autor";
+            divItem.className         = "publicacao";
+            spanTitulo.className      = "publicacao-titulo";
+            spanAutor.className       = "publicacao-autor";
             spanPrecoCompra.className = "publicacao-precoCompra";
-            spanPrecoVenda.className = "publicacao-precoVenda";
-            spanGenero.className = "publicacao-genero";
+            spanPrecoVenda.className  = "publicacao-precoVenda";
+            spanGenero.className      = "publicacao-genero";
+            divBotoes.className       = "div-buttons";
+            btnEditar.className       = "publicacao-btn-editar";
+            btnDeletar.className      = "publicacao-btn-editar";
 
-            divButtons.className = "div-buttons"
+            btnEditar.id  = "btnEditar"  + item.id;
+            btnDeletar.id = "btnDeletar" + item.id;
 
-            btnEditar.className = "publicacao-btn-editar"
-            btnEditar.id = "btnEditar" + item.idLivro;
-            btnEditar.setAttribute("onclick", `editar(${item.idLivro})`);
+            btnEditar.setAttribute("onclick",  "editar("  + item.id + ")");
+            btnDeletar.setAttribute("onclick", "deletar(" + item.id + ")");
 
-            btnDeletar.className = "publicacao-btn-editar"
-            btnDeletar.id = "btnDeletar" + item.idLivro;
-            btnDeletar.setAttribute("onclick", `deletar(${item.idLivro})`);
-
-            divitem.appendChild(spanID);
-            divitem.appendChild(spanTitulo);
-            divitem.appendChild(spanGenero);
-            divitem.appendChild(spanAutor);
-            divitem.appendChild(spanPrecoCompra);
-            divitem.appendChild(spanPrecoVenda);
-            divitem.appendChild(divButtons);
-            divButtons.appendChild(btnEditar);
-            divButtons.appendChild(btnDeletar);
-            feed.appendChild(divitem);
+            divItem.appendChild(spanID);
+            divItem.appendChild(spanTitulo);
+            divItem.appendChild(spanGenero);
+            divItem.appendChild(spanAutor);
+            divItem.appendChild(spanPrecoCompra);
+            divItem.appendChild(spanPrecoVenda);
+            divItem.appendChild(spanEstoque);
+            divItem.appendChild(divBotoes);
+            divBotoes.appendChild(btnEditar);
+            divBotoes.appendChild(btnDeletar);
+            feed.appendChild(divItem);
           }
-
-
         });
       } else {
-        throw ('Houve um erro na API!');
+        throw "Houve um erro na API!";
       }
-    }).catch(function (resposta) {
-      console.error(resposta);
-
+    }).catch(function (erro) {
+      console.error(erro);
     });
   }
 
+  function editar(idLivro) {
+    var novoPrecoCompra = prompt("Digite o novo preço de compra:");
+    var novoPrecoVenda  = prompt("Digite o novo preço de venda:");
+
+    if (novoPrecoCompra == null || novoPrecoVenda == null) {
+      return;
+    }
+
+    var corpo = {
+      precoCompra: novoPrecoCompra,
+      precoVenda:  novoPrecoVenda
+    };
+
+    fetch("/livros/editar/" + idLivro, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(corpo)
+    }).then(function (resposta) {
+      if (resposta.ok) {
+        alert("Livro editado com sucesso!");
+        selecionarLivrosTodos();
+      } else {
+        alert("Erro ao editar o livro.");
+      }
+    }).catch(function (erro) {
+      console.error(erro);
+    });
+  }
+
+  function deletar(idLivro) {
+    var confirmar = confirm("Tem certeza que deseja deletar este livro?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    fetch("/livros/deletar/" + idLivro, {
+      method: "DELETE"
+    }).then(function (resposta) {
+      if (resposta.ok) {
+        alert("Livro deletado com sucesso!");
+        selecionarLivrosTodos();
+      } else {
+        alert("Erro ao deletar o livro.");
+      }
+    }).catch(function (erro) {
+      console.error(erro);
+    });
+  }
 
 </script>

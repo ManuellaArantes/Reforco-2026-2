@@ -19,15 +19,18 @@ CREATE TABLE genero (
 );
 
 CREATE TABLE livro (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	titulo VARCHAR(50),
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(50),
     fkAutor INT,
     fkGenero INT,
     precoCompra DOUBLE,
     precoVenda DOUBLE,
+    quantidadeEstoque INT NOT NULL,
     CONSTRAINT fk_livro_autor FOREIGN KEY (fkAutor) REFERENCES autor(id),
     CONSTRAINT fk_livro_genero FOREIGN KEY (fkGenero) REFERENCES genero(id)
 );
+
+
     INSERT INTO genero (nome) VALUES 
 ('horror'),
 ('romance'),

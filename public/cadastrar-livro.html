@@ -91,7 +91,7 @@
 
                             <label for="genero">Selecione um gênero:
                                 <br>
-                                <select name="genero" id="fkGenero_lista">
+                                <select name="genero" id="fkGenero_lista" onchange="calcularPrecoVenda()">
                                     <option hidden selected> - Escolha uma opção - </option>
                                 </select>
                             </label>
@@ -106,13 +106,19 @@
                             <label>
                                 Preço de Compra (R$):
                                 <br>
-                                <input name="precoCompra" id="precoCompra" maxlength="20" type="Text"></input>
+                                <input name="precoCompra" id="precoCompra" maxlength="20" type="Text" oninput="calcularPrecoVenda()"></input>
                             </label>
 
                             <label>
                                 Preço de Venda (R$):
                                 <br>
-                                <input name="precoVenda" id="precoVenda" maxlength="20" type="Text"></input>
+                                <input name="precoVenda" id="precoVenda" maxlength="20" type="Text" ></input>
+                            </label>
+
+                            <label>
+                                Quantidade de livros em estoque:
+                                <br>
+                                <input name="quantidadeEstoque" id="quantidadeEstoque" type="number" min="0"></input>
                             </label>
 
 
@@ -134,19 +140,62 @@
 
 <script>
 
+    function calcularPrecoVenda() {
+        var valorDigitado = document.getElementById("precoCompra").value.replace(",", ".");
+        var precoCompra = Number(valorDigitado);
+        var listaGenero = document.getElementById("fkGenero_lista");
+        var campoPrecoVenda = document.getElementById("precoVenda");
 
+        
+        if (listaGenero.selectedIndex <= 0) {
+            campoPrecoVenda.value = "";
+            return;
+        }
+
+        var nomeGenero = listaGenero.options[listaGenero.selectedIndex].text.toLowerCase().trim();
+
+        
+        if (isNaN(precoCompra) || precoCompra <= 0) {
+            campoPrecoVenda.value = "";
+            return;
+        }
+
+        var precoVenda = 0;
+
+        // compra a partir de R$100 + gênero horror ou romance  margem de 22,5%
+        if (precoCompra >= 100 && (nomeGenero == "horror" || nomeGenero == "romance")) {
+            precoVenda = precoCompra * 1.225;
+        }
+        //  compra até R$50 + gênero poesia ou horror  margem de 25%
+        else if (precoCompra <= 50 && (nomeGenero == "poesia" || nomeGenero == "horror")) {
+            precoVenda = precoCompra * 1.25;
+        }
+        //  compra entre R$50 e R$100 + gênero fantasia margem de 27,5%
+        else if (precoCompra > 50 && precoCompra < 100 && nomeGenero == "fantasia") {
+            precoVenda = precoCompra * 1.275;
+        }
+
+        
+        if (precoVenda > 0) {
+            campoPrecoVenda.value = precoVenda.toFixed(2);
+        } else {
+            campoPrecoVenda.value = "";
+        }
+    }
 
     function limparFormulario() {
         document.getElementById("form_postagem").reset();
     }
 
     function cadastrar() {
+        calcularPrecoVenda();
         var corpo = {
             titulo: form_postagem.titulo.value,
             fkGenero: form_postagem.fkGenero_lista.value,
             fkAutor: form_postagem.fkAutor_lista.value,
             precoCompra: form_postagem.precoCompra.value,
-            precoVenda: form_postagem.precoVenda.value
+            precoVenda: form_postagem.precoVenda.value,
+            quantidadeEstoque: form_postagem.quantidadeEstoque.value
         }
 
         fetch(`/livros/cadastrar`, {
